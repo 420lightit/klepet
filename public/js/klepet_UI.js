@@ -1,17 +1,27 @@
 function divElementEnostavniTekst(sporocilo) {
   var jeSmesko = sporocilo.indexOf('http://sandbox.lavbic.net/teaching/OIS/gradivo/') > -1;
+ 
+  var jeVideo= sporocilo.indexOf('class="video"') > -1;
   
    var jeSlika = sporocilo.indexOf('class="slike"') > -1;
-   if(jeSlika){
+  
+  if(jeVideo){
+    return $('<div style="font-weight: bold"></div>').html(sporocilo);
+  } 
+   
+   else if(jeSlika){
      return $('<div style="font-weight: bold"></div>').html(sporocilo);
    }
   
-  else if (jeSmesko) {
+  else if(jeSmesko) {
     sporocilo = sporocilo.replace(/\</g, '&lt;').replace(/\>/g, '&gt;').replace('&lt;img', '<img').replace('png\' /&gt;', 'png\' />');
     return $('<div style="font-weight: bold"></div>').html(sporocilo);
-  } else {
-    return $('<div style="font-weight: bold;"></div>').text(sporocilo);
-  }
+  } 
+  
+  else{
+     return $('<div style="font-weight: bold;"></div>').text(sporocilo);
+   } 
+  
 }
 
 function divElementHtmlTekst(sporocilo) {
@@ -22,6 +32,7 @@ function procesirajVnosUporabnika(klepetApp, socket) {
   var sporocilo = $('#poslji-sporocilo').val();
   sporocilo = dodajSmeske(sporocilo);
   sporocilo = dodajSliko(sporocilo);
+  sporocilo = dodajVideo(sporocilo);
   var sistemskoSporocilo;
 
   if (sporocilo.charAt(0) == '/') {
@@ -68,6 +79,24 @@ function dodajSliko(vhodnoBesedilo){
    
    return vhodnoBesedilo;
  }
+
+
+function dodajVideo(vhodnoBesedilo){
+  var isci = "https://www.youtube.com/watch?v=";
+  if(vhodnoBesedilo.startsWith(isci)){
+  vhodnoBesedilo = vhodnoBesedilo.replace("watch?v=", "embed/");
+  vhodnoBesedilo = vhodnoBesedilo.concat('<br><iframe src="' + vhodnoBesedilo +'" class="video" allowfullscreen></iframe>');
+    
+  }
+  
+   
+  
+  
+  return vhodnoBesedilo
+}
+
+
+
 
 $(document).ready(function() {
   var klepetApp = new Klepet(socket);
